@@ -38,11 +38,18 @@ conn.commit()
 # ----------------------------
 st.set_page_config(
     page_title="AI Workflow Optimizer",
-    page_icon="🚀",
+    page_icon="",
     layout="wide"
 )
+st.markdown("""
+<style>
+.big-font {
+    font-size:18px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-st.title("🚀 AI Engineering Workflow Optimizer")
+st.title("AI Engineering Workflow Optimizer")
 st.caption("Smart task allocation • Productivity tracking • Resource optimization")
 
 # ----------------------------
@@ -50,13 +57,13 @@ st.caption("Smart task allocation • Productivity tracking • Resource optimiz
 # ----------------------------
 menu = st.sidebar.radio(
     "Navigation",
-    ["🏠 Home", "👨‍💻 Add Developer", "📌 Add Task", "🤖 Auto Allocate", "📊 Dashboard", "🧠 AI Breakdown"]
+    ["Home", "Add Developer", "Add Task", "Auto Allocate", "Dashboard", "AI Breakdown"]
 )
 
 # ----------------------------
 # HOME
 # ----------------------------
-if menu == "🏠 Home":
+if menu == "Home":
     st.subheader("Welcome")
     st.write("""
 This system helps software teams:
@@ -71,7 +78,7 @@ This system helps software teams:
 # ----------------------------
 # ADD DEVELOPER
 # ----------------------------
-elif menu == "👨‍💻 Add Developer":
+elif menu == "Add Developer":
     st.subheader("Add Developer")
 
     with st.form("dev_form"):
@@ -96,7 +103,7 @@ elif menu == "👨‍💻 Add Developer":
 # ----------------------------
 # ADD TASK
 # ----------------------------
-elif menu == "📌 Add Task":
+elif menu == "Add Task":
     st.subheader("Create Task")
 
     with st.form("task_form"):
@@ -121,7 +128,7 @@ elif menu == "📌 Add Task":
 # ----------------------------
 # AUTO ALLOCATION
 # ----------------------------
-elif menu == "🤖 Auto Allocate":
+elif menu == "Auto Allocate":
     st.subheader("Smart Task Allocation")
 
     devs = cursor.execute("SELECT * FROM developers").fetchall()
@@ -174,36 +181,82 @@ elif menu == "🤖 Auto Allocate":
 # ----------------------------
 # DASHBOARD
 # ----------------------------
-elif menu == "📊 Dashboard":
-    st.subheader("Analytics Dashboard")
+elif menu == "Dashboard":
+    st.subheader("Project Insights Dashboard")
 
     tasks_df = pd.read_sql_query("SELECT * FROM tasks", conn)
     dev_df = pd.read_sql_query("SELECT * FROM developers", conn)
 
-    col1, col2, col3 = st.columns(3)
+    if len(tasks_df) == 0:
+        st.warning("No tasks available. Add tasks to see analytics.")
+    else:
+        # ---------------- KPI CARDS ----------------
+        total_tasks = len(tasks_df)
+        pending_tasks = len(tasks_df[tasks_df["status"] == "Pending"])
+        assigned_tasks = len(tasks_df[tasks_df["assigned_to"] != "Unassigned"])
 
-    col1.metric("Total Tasks", len(tasks_df))
-    col2.metric("Developers", len(dev_df))
-    col3.metric("Pending Tasks", len(tasks_df[tasks_df["status"] == "Pending"]))
+        col1, col2, col3 = st.columns(3)
 
-    if len(tasks_df) > 0:
+        col1.metric("Total Tasks", total_tasks)
+        col2.metric("Pending Tasks", pending_tasks)
+        col3.metric("Assigned Tasks", assigned_tasks)
 
-        # Status Pie
-        fig1 = px.pie(tasks_df, names="status", title="Task Status")
-        st.plotly_chart(fig1, use_container_width=True)
+        st.markdown("---")
+
+        # ---------------- CHARTS ----------------
+        col4, col5 = st.columns(2)
+
+        # Task Status Pie
+        with col4:
+            st.markdown("###  Task Status Distribution")
+            fig1 = px.pie(
+                tasks_df,
+                names="status",
+                hole=0.4
+            )
+            st.plotly_chart(fig1, use_container_width=True)
 
         # Tasks per Developer
-        fig2 = px.bar(tasks_df, x="assigned_to", title="Tasks Per Developer")
-        st.plotly_chart(fig2, use_container_width=True)
+        with col5:
+            st.markdown("###  Work Distribution")
+            fig2 = px.bar(
+                tasks_df,
+                x="assigned_to",
+                title="Tasks per Developer"
+            )
+            st.plotly_chart(fig2, use_container_width=True)
 
-    if len(dev_df) > 0:
-        fig3 = px.bar(dev_df, x="name", y="workload", title="Developer Workload %")
-        st.plotly_chart(fig3, use_container_width=True)
+        st.markdown("---")
 
+        # ---------------- WORKLOAD ----------------
+        if len(dev_df) > 0:
+            st.markdown("### Developer Workload")
+
+            fig3 = px.bar(
+                dev_df,
+                x="name",
+                y="workload",
+                text="workload"
+            )
+            fig3.update_traces(textposition="outside")
+            st.plotly_chart(fig3, use_container_width=True)
+
+        st.markdown("---")
+
+        # ---------------- INSIGHTS ----------------
+        st.markdown("### Insights")
+
+        overloaded = dev_df[dev_df["workload"] > 70]
+
+        if len(overloaded) > 0:
+            st.warning("Some developers are overloaded!")
+            st.write(overloaded[["name", "workload"]])
+        else:
+            st.success("Workload distribution looks balanced.")
 # ----------------------------
 # AI BREAKDOWN
 # ----------------------------
-elif menu == "🧠 AI Breakdown":
+elif menu == "AI Breakdown":
     st.subheader("AI Project Task Breakdown")
 
     project = st.text_input("Enter Project Name")
