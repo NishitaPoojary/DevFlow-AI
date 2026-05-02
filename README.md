@@ -47,5 +47,19 @@ The system utilizes four main relational tables:
    streamlit run app.py
 4. Load Sample Data: Click the "Load Sample Data" button in the sidebar to immediately populate the dashboard and test the allocation engine.
 
+## Screenshots
+
+### Dashboard
+![Dashboard](images/dashboard.png)
+
+### Task Creation
+![Task](images/task.png)
+
+### Developer Page
+![Developers](images/dev.png)
+
+### Allocation
+![Allocation](images/allocation.png)
+
 # Author
 Nishita Poojary
