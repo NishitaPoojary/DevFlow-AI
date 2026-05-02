@@ -1,4 +1,4 @@
-### DevFlow AI: Engineering Workflow & Resource Optimization System
+# DevFlow AI: Engineering Workflow & Resource Optimization System
 ## Project Overview
 DevFlow AI is an intelligent management platform designed to structure the software development lifecycle (SDLC) through AI-assisted workflows. The system addresses common team bottlenecks—such as inefficient task allocation and poor visibility into developer productivity—by utilizing a data-driven approach to resource management.
 This prototype demonstrates a full-stack solution featuring an Allocation Engine, a Real-time Analytics Dashboard, and AI-powered Project Decomposition.
@@ -26,11 +26,11 @@ The system utilizes four main relational tables:
   - workflow_phases: Tracks the timeline of each task through the SDLC.
 
 ## Installation & Setup
-# Prerequisites
+### Prerequisites
   - Python 3.8+
   - Groq API Key (Optional; the system includes an Intelligent Mock Mode for offline evaluation)
 
-# Steps
+### Steps
 1. Clone the repository:
    git clone https://github.com/your-username/devflow-ai.git
    cd devflow-ai
@@ -40,5 +40,5 @@ The system utilizes four main relational tables:
    streamlit run app.py
 4. Load Sample Data: Click the "Load Sample Data" button in the sidebar to immediately populate the dashboard and test the allocation engine.
 
-### Author
+# Author
 Nishita Poojary
