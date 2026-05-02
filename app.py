@@ -9,17 +9,15 @@ import json
 import os
 import requests
 
-# ----------------------------
 # CONFIG
-# ----------------------------
+
 from dotenv import load_dotenv
 load_dotenv()
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 
-# ----------------------------
 # DATABASE SETUP
-# ----------------------------
+
 conn = sqlite3.connect("project.db", check_same_thread=False)
 cursor = conn.cursor()
 
@@ -69,9 +67,8 @@ CREATE TABLE IF NOT EXISTS workflow_phases (
 """)
 conn.commit()
 
-# ----------------------------
 # GROQ AI HELPER
-# ----------------------------
+
 def call_groq(prompt: str, system: str = "You are an expert software engineering assistant.") -> str:
     if not GROQ_API_KEY:
         return _mock_ai_response(prompt)
@@ -163,7 +160,7 @@ def _mock_ai_response(prompt: str) -> str:
     else:
         return f"""Based on the engineering context provided:
 
-**Analysis Complete** ✅
+**Analysis Complete** 
 
 Key observations:
 - The task requires careful planning and modular execution
@@ -178,9 +175,8 @@ Key observations:
 
 *This response was generated using intelligent mock AI (add GROQ_API_KEY for full AI power)*"""
 
-# ----------------------------
 # ALLOCATION ENGINE
-# ----------------------------
+
 def calculate_allocation_score(task, dev):
     """
     Weighted scoring:
@@ -192,17 +188,17 @@ def calculate_allocation_score(task, dev):
     task_skill = task[2].lower() if task[2] else ""
     dev_skills = dev[2].lower() if dev[2] else ""
 
-    # Skill match (partial match supported)
+    # Skill match
     if task_skill and task_skill in dev_skills:
         score += 50
     elif task_skill and any(s.strip() in dev_skills for s in task_skill.split(",")):
-        score += 25  # partial match
+        score += 25  
 
-    # Workload (lower = better): 0 workload → 30 pts, 100 workload → 0 pts
+    # Workload 
     workload = dev[3] if dev[3] is not None else 50
     score += (100 - workload) * 0.30
 
-    # Performance (higher = better): 100 perf → 20 pts
+    # Performance 
     performance = dev[4] if dev[4] is not None else 50
     score += performance * 0.20
 
@@ -246,9 +242,8 @@ def auto_allocate_tasks():
     conn.commit()
     return allocated, None
 
-# ----------------------------
 # SEED SAMPLE DATA
-# ----------------------------
+
 def seed_sample_data():
     existing = cursor.execute("SELECT COUNT(*) FROM developers").fetchone()[0]
     if existing > 0:
@@ -303,12 +298,11 @@ def seed_sample_data():
     conn.commit()
     return True
 
-# ----------------------------
 # PAGE CONFIG
-# ----------------------------
+
 st.set_page_config(
     page_title="DevFlow AI",
-    page_icon="⚙️",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -346,23 +340,22 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------------------
 # SIDEBAR
-# ----------------------------
+
 with st.sidebar:
-    st.markdown("## ⚙️ DevFlow AI")
+    st.markdown("## DevFlow AI")
     st.markdown("*Engineering Workflow Optimizer*")
     st.markdown("---")
 
     menu = st.radio(
         "Navigate",
-        ["🏠 Home", "👨‍💻 Developers", "📋 Tasks", "🤖 AI Breakdown",
-         "⚡ Auto Allocate", "📊 Dashboard", "🔍 AI Insights"],
+        ["Home", "Developers", "Tasks", "AI Breakdown",
+         "Auto Allocate", "Dashboard", "AI Insights"],
         label_visibility="collapsed"
     )
 
     st.markdown("---")
-    api_key_input = st.text_input("🔑 Groq API Key (optional)", type="password",
+    api_key_input = st.text_input("Groq API Key (optional)", type="password",
                                    help="Get free key at console.groq.com")
     if api_key_input:
         GROQ_API_KEY = api_key_input
@@ -379,11 +372,10 @@ with st.sidebar:
     ai_status = "🟢 AI Active" if GROQ_API_KEY else "🟡 Mock AI Mode"
     st.markdown(f"**Status:** {ai_status}")
 
-# ----------------------------
 # HOME
-# ----------------------------
-if menu == "🏠 Home":
-    st.title("⚙️ DevFlow AI")
+
+if menu == "Home":
+    st.title("DevFlow AI")
     st.markdown("### AI-Powered Engineering Workflow & Resource Optimization")
     st.markdown("---")
 
@@ -391,11 +383,11 @@ if menu == "🏠 Home":
     with col1:
         st.markdown("""
         #### What this system does:
-        - 🗂️ **Workflow Engine** — Phases: Planning → Development → Testing → Feedback
-        - 🤖 **AI Task Breakdown** — Intelligent project decomposition
-        - ⚡ **Smart Allocation** — Assigns tasks based on skill, workload & performance scoring
-        - 📊 **Real-time Dashboard** — KPIs, bottlenecks, and risk detection
-        - 🔍 **AI Insights** — Productivity analysis and recommendations
+        -**Workflow Engine** — Phases: Planning → Development → Testing → Feedback
+        -**AI Task Breakdown** — Intelligent project decomposition
+        -**Smart Allocation** — Assigns tasks based on skill, workload & performance scoring
+        -**Real-time Dashboard** — KPIs, bottlenecks, and risk detection
+        -**AI Insights** — Productivity analysis and recommendations
         """)
 
     with col2:
@@ -403,18 +395,17 @@ if menu == "🏠 Home":
         tasks = cursor.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
         ai_logs = cursor.execute("SELECT COUNT(*) FROM ai_logs").fetchone()[0]
 
-        st.metric("👨‍💻 Developers", devs)
-        st.metric("📋 Total Tasks", tasks)
-        st.metric("🤖 AI Interactions", ai_logs)
+        st.metric("Developers", devs)
+        st.metric("Total Tasks", tasks)
+        st.metric("AI Interactions", ai_logs)
 
     st.markdown("---")
-    st.info("👈 Use the sidebar to navigate. Start by clicking **Load Sample Data** to see a demo!")
+    st.info("Use the sidebar to navigate. Start by clicking **Load Sample Data** to see a demo!")
 
-# ----------------------------
 # DEVELOPERS
-# ----------------------------
-elif menu == "👨‍💻 Developers":
-    st.title("👨‍💻 Developer Management")
+
+elif menu == "Developers":
+    st.title("Developer Management")
     tab1, tab2 = st.tabs(["Add Developer", "View All"])
 
     with tab1:
@@ -427,7 +418,7 @@ elif menu == "👨‍💻 Developers":
                 workload = st.slider("Current Workload %", 0, 100, 30)
                 performance = st.slider("Performance Score", 0, 100, 75)
 
-            if st.form_submit_button("➕ Add Developer"):
+            if st.form_submit_button("Add Developer"):
                 if name and skill:
                     cursor.execute(
                         "INSERT INTO developers(name, skill, workload, performance) VALUES(?,?,?,?)",
@@ -453,7 +444,7 @@ elif menu == "👨‍💻 Developers":
                 use_container_width=True
             )
 
-            # Quick chart
+            # Chart
             fig = px.scatter(df, x="workload", y="performance",
                              text="name", color="performance",
                              color_continuous_scale="RdYlGn",
@@ -462,11 +453,10 @@ elif menu == "👨‍💻 Developers":
             fig.update_traces(textposition="top center", marker_size=12)
             st.plotly_chart(fig, use_container_width=True)
 
-# ----------------------------
 # TASKS
-# ----------------------------
-elif menu == "📋 Tasks":
-    st.title("📋 Task Management")
+
+elif menu == "Tasks":
+    st.title("Task Management")
     tab1, tab2, tab3 = st.tabs(["Create Task", "View All", "Update Status"])
 
     with tab1:
@@ -480,7 +470,7 @@ elif menu == "📋 Tasks":
                 hours = st.number_input("Estimated Hours", 1, 200, 8)
                 phase = st.selectbox("Phase", ["Planning", "Development", "Testing", "Feedback"])
 
-            if st.form_submit_button("➕ Create Task"):
+            if st.form_submit_button("Create Task"):
                 if title and skill:
                     cursor.execute(
                         "INSERT INTO tasks(title, skill, priority, hours, assigned_to, status, phase, created_at) VALUES(?,?,?,?,?,?,?,?)",
@@ -496,7 +486,6 @@ elif menu == "📋 Tasks":
         if len(df) == 0:
             st.info("No tasks yet.")
         else:
-            # Filter
             status_filter = st.multiselect("Filter by Status", df["status"].unique().tolist(), default=df["status"].unique().tolist())
             filtered = df[df["status"].isin(status_filter)]
 
@@ -530,11 +519,10 @@ elif menu == "📋 Tasks":
                 conn.commit()
                 st.success("Task updated!")
 
-# ----------------------------
 # AI BREAKDOWN
-# ----------------------------
-elif menu == "🤖 AI Breakdown":
-    st.title("🤖 AI Project Task Breakdown")
+
+elif menu == "AI Breakdown":
+    st.title("AI Project Task Breakdown")
     st.markdown("*Use AI to decompose your project into structured, phase-based subtasks*")
 
     col1, col2 = st.columns([2, 1])
@@ -545,7 +533,7 @@ elif menu == "🤖 AI Breakdown":
         team_size = st.number_input("Team Size", 1, 20, 4)
         tech_stack = st.text_input("Tech Stack", placeholder="React, Python, PostgreSQL")
 
-    if st.button("🚀 Generate AI Breakdown", use_container_width=True):
+    if st.button("Generate AI Breakdown", use_container_width=True):
         if project:
             with st.spinner("AI is analyzing your project..."):
                 prompt = f"""
@@ -573,12 +561,12 @@ For each subtask include estimated hours and required skill. Format clearly.
                 )
                 conn.commit()
 
-            st.markdown("### 📋 AI-Generated Task Breakdown")
+            st.markdown("###AI-Generated Task Breakdown")
             st.markdown(response)
 
             # Option to auto-create tasks from breakdown
             st.markdown("---")
-            if st.button("➕ Auto-Create These Tasks in System"):
+            if st.button("Auto-Create These Tasks in System"):
                 default_tasks = [
                     ("Requirements Gathering", "Planning", "High", 8),
                     ("System Architecture Design", "Planning", "High", 12),
@@ -600,24 +588,23 @@ For each subtask include estimated hours and required skill. Format clearly.
                          datetime.now().strftime("%Y-%m-%d %H:%M"), 1)
                     )
                 conn.commit()
-                st.success(f"✅ {len(default_tasks)} tasks created from AI breakdown!")
+                st.success(f"{len(default_tasks)} tasks created from AI breakdown!")
         else:
             st.error("Please enter a project name.")
 
-# ----------------------------
 # AUTO ALLOCATE
-# ----------------------------
-elif menu == "⚡ Auto Allocate":
-    st.title("⚡ Smart Task Allocation Engine")
+
+elif menu == "Auto Allocate":
+    st.title("Smart Task Allocation Engine")
 
     col1, col2, col3 = st.columns(3)
     devs_count = cursor.execute("SELECT COUNT(*) FROM developers").fetchone()[0]
     unassigned = cursor.execute("SELECT COUNT(*) FROM tasks WHERE assigned_to='Unassigned'").fetchone()[0]
     assigned = cursor.execute("SELECT COUNT(*) FROM tasks WHERE assigned_to!='Unassigned'").fetchone()[0]
 
-    col1.metric("👨‍💻 Developers", devs_count)
-    col2.metric("📋 Unassigned Tasks", unassigned)
-    col3.metric("✅ Already Assigned", assigned)
+    col1.metric("Developers", devs_count)
+    col2.metric("Unassigned Tasks", unassigned)
+    col3.metric("Already Assigned", assigned)
 
     st.markdown("---")
     st.markdown("""
@@ -629,7 +616,7 @@ elif menu == "⚡ Auto Allocate":
     | High Performance | 20 pts | performance × 0.2 |
     """)
 
-    if st.button("🚀 Run Auto Allocation", use_container_width=True):
+    if st.button("Run Auto Allocation", use_container_width=True):
         if devs_count == 0:
             st.error("Add developers first.")
         elif unassigned == 0:
@@ -641,20 +628,17 @@ elif menu == "⚡ Auto Allocate":
             if error:
                 st.error(error)
             elif allocated:
-                st.success(f"✅ {len(allocated)} tasks allocated successfully!")
+                st.success(f"{len(allocated)} tasks allocated successfully!")
                 alloc_df = pd.DataFrame(allocated)
                 st.dataframe(alloc_df, use_container_width=True)
-
-                # Visual breakdown
                 fig = px.bar(alloc_df, x="Assigned To", title="Tasks Allocated Per Developer",
                              color="Score", color_continuous_scale="Blues")
                 st.plotly_chart(fig, use_container_width=True)
 
-# ----------------------------
 # DASHBOARD
-# ----------------------------
-elif menu == "📊 Dashboard":
-    st.title("📊 Real-Time Project Dashboard")
+
+elif menu == "Dashboard":
+    st.title("Real-Time Project Dashboard")
 
     tasks_df = pd.read_sql_query("SELECT * FROM tasks", conn)
     dev_df = pd.read_sql_query("SELECT * FROM developers", conn)
@@ -664,7 +648,7 @@ elif menu == "📊 Dashboard":
         st.warning("No data yet. Load sample data from the sidebar.")
         st.stop()
 
-    # --- KPI ROW ---
+    # KPI ROW 
     total = len(tasks_df)
     completed = len(tasks_df[tasks_df["status"] == "Completed"])
     in_progress = len(tasks_df[tasks_df["status"] == "In Progress"])
@@ -674,15 +658,15 @@ elif menu == "📊 Dashboard":
     completion_rate = round((completed / total) * 100, 1) if total > 0 else 0
 
     c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("📋 Total Tasks", total)
-    c2.metric("✅ Completed", completed, f"{completion_rate}%")
-    c3.metric("🔄 In Progress", in_progress)
-    c4.metric("⏳ Pending", pending)
-    c5.metric("🤖 AI-Assisted", ai_assisted)
+    c1.metric("Total Tasks", total)
+    c2.metric("Completed", completed, f"{completion_rate}%")
+    c3.metric("In Progress", in_progress)
+    c4.metric("Pending", pending)
+    c5.metric("AI-Assisted", ai_assisted)
 
     st.markdown("---")
 
-    # --- ROW 1: Status + Phase ---
+    # ROW 1: Status + Phase 
     col1, col2 = st.columns(2)
 
     with col1:
@@ -700,7 +684,7 @@ elif menu == "📊 Dashboard":
                          color_discrete_sequence=["#3b82f6"])
         st.plotly_chart(fig2, use_container_width=True)
 
-    # --- ROW 2: Workload + Priority ---
+    # ROW 2: Workload + Priority
     col3, col4 = st.columns(2)
 
     with col3:
@@ -725,7 +709,7 @@ elif menu == "📊 Dashboard":
                       color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig4, use_container_width=True)
 
-    # --- ROW 3: AI Usage + Dev Performance ---
+    # ROW 3: AI Usage + Dev Performance 
     col5, col6 = st.columns(2)
 
     with col5:
@@ -750,7 +734,7 @@ elif menu == "📊 Dashboard":
             fig6.update_traces(textposition="top center")
             st.plotly_chart(fig6, use_container_width=True)
 
-    # --- RISK & BOTTLENECK ---
+    # RISK & BOTTLENECK 
     st.markdown("---")
     st.markdown("#### ⚠️ Risk & Bottleneck Alerts")
 
@@ -770,7 +754,7 @@ elif menu == "📊 Dashboard":
         alerts.append(("🟡 MEDIUM", f"{len(tasks_df[tasks_df['assigned_to'] == 'Unassigned'])} tasks are unassigned"))
 
     if not alerts:
-        st.success("✅ No critical risks detected. Team is well-balanced!")
+        st.success("No critical risks detected. Team is well-balanced!")
     else:
         for level, msg in alerts:
             if "HIGH" in level:
@@ -778,11 +762,10 @@ elif menu == "📊 Dashboard":
             else:
                 st.warning(f"{level}: {msg}")
 
-# ----------------------------
 # AI INSIGHTS
-# ----------------------------
-elif menu == "🔍 AI Insights":
-    st.title("🔍 AI-Powered Insights")
+
+elif menu == "AI Insights":
+    st.title("AI-Powered Insights")
     st.markdown("*Ask AI anything about your team, tasks, or project health*")
 
     insight_type = st.selectbox("Choose Insight Type", [
@@ -797,7 +780,7 @@ elif menu == "🔍 AI Insights":
     if insight_type == "Custom Question":
         custom_q = st.text_area("Ask anything about your project...", height=100)
 
-    if st.button("🤖 Generate Insight", use_container_width=True):
+    if st.button("Generate Insight", use_container_width=True):
         tasks_df = pd.read_sql_query("SELECT * FROM tasks", conn)
         dev_df = pd.read_sql_query("SELECT * FROM developers", conn)
 
@@ -830,15 +813,5 @@ Developer Workloads: {', '.join([f"{r['name']}:{r['workload']}%" for _, r in dev
             )
             conn.commit()
 
-        st.markdown("### 🤖 AI Analysis")
+        st.markdown("### AI Analysis")
         st.markdown(response)
-
-    # Show AI interaction history
-    st.markdown("---")
-    st.markdown("#### 📜 Recent AI Interaction History")
-    ai_df = pd.read_sql_query("SELECT timestamp, developer, phase, prompt FROM ai_logs ORDER BY id DESC LIMIT 10", conn)
-    if len(ai_df) > 0:
-        ai_df["prompt"] = ai_df["prompt"].str[:80] + "..."
-        st.dataframe(ai_df, use_container_width=True)
-    else:
-        st.info("No AI interactions logged yet.")
