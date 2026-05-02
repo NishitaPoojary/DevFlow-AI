@@ -25,6 +25,13 @@ The system utilizes four main relational tables:
   - ai_logs: Captures the history of AI usage across different phases.
   - workflow_phases: Tracks the timeline of each task through the SDLC.
 
+## Tech Stack
+- Frontend: Streamlit  
+- Backend: Python  
+- Database: SQLite  
+- Data Processing: Pandas  
+- Visualization: Plotly  
+
 ## Installation & Setup
 ### Prerequisites
   - Python 3.8+
@@ -39,6 +46,21 @@ The system utilizes four main relational tables:
 3. Run the application:
    streamlit run app.py
 4. Load Sample Data: Click the "Load Sample Data" button in the sidebar to immediately populate the dashboard and test the allocation engine.
+
+## 📷 Screenshots
+
+### Dashboard
+![Dashboard](images/dashboard.png)
+
+### Task Creation
+![Task](images/task.png)
+
+### Developer Page
+![Developers](images/dev.png)
+
+### Allocation
+![Allocation](images/allocation.png)
+
 
 # Author
 Nishita Poojary
