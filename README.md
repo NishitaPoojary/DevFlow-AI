@@ -58,11 +58,11 @@ The system utilizes four main relational tables:
 ### Developer Page
 ![Developers](images/dev.png)
 
-### Live link
-https://devflow-ai-d3xt5hkv4yefehxhy487gw.streamlit.app/
-
 ### Allocation
 ![Allocation](images/allocation.png)
+
+### Live link
+https://devflow-ai-d3xt5hkv4yefehxhy487gw.streamlit.app/
 
 # Author
 Nishita Poojary
